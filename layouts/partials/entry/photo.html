@@ -1,0 +1,18 @@
+{{- $cover := "" -}}
+{{- with .Params.images }}{{ $cover = index . 0 }}{{ end -}}
+{{- $res := "" -}}
+{{- with $cover }}{{ $res = $.Resources.GetMatch . }}{{ end -}}
+{{- with $res }}{{ $res = partial "oriented.html" . }}{{ end -}}
+<li class="entry entry--photo">
+  <a href="{{ .RelPermalink }}">
+    {{- with $res }}{{ $img := .Fill "800x534 webp q80" }}
+    <span class="entry__cover"><img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="{{ $.Title }}" loading="lazy"></span>
+    {{- end }}
+    <h3 class="entry__title">{{ .Title }}</h3>
+  </a>
+  <div class="entry__meta">
+    <a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></a>
+    {{- with .Params.images }}<span>{{ len . }} photos</span>{{ end }}
+    {{ partial "tags.html" . }}
+  </div>
+</li>

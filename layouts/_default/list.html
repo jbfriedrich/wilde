@@ -1,0 +1,18 @@
+{{ define "main" }}
+  {{- if and .Parent (not .Parent.IsHome) }}
+  {{/* Nested section (e.g. /links/<domain>/): keep the title so a domain-filtered
+       view announces which domain you're looking at. */}}
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- with .Content }}<div class="page-header__lede">{{ . }}</div>{{ end }}
+  </header>
+  {{- else }}
+  {{- with .Content }}<header class="page-header"><div class="page-header__lede">{{ . }}</div></header>{{ end }}
+  {{- end }}
+  {{- $pages := sort .RegularPagesRecursive "Date" "desc" -}}
+  {{- $paged := .Paginate $pages -}}
+  <ul class="feed">
+    {{- range $paged.Pages }}{{ partial "entry-card.html" . }}{{ end -}}
+  </ul>
+  {{ partial "pagination.html" . }}
+{{ end }}

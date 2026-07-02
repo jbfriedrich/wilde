@@ -1,0 +1,13 @@
+{{- /*
+  Returns an EXIF-orientation-corrected copy of an image resource.
+
+  Hugo does not apply the EXIF orientation tag automatically during Resize/Fill,
+  so phone photos (landscape pixels + an orientation flag) come out rotated.
+  Hugo's built-in images.AutoOrient filter rotates/flips the pixels to match the
+  flag — the same thing browsers and Apple Photos do on display — and handles
+  every orientation (including mirrored). The source file is never modified.
+
+  Apply this FIRST, before Resize/Fill, so cropping happens on the upright image.
+  Usage: {{ $img := partial "oriented.html" $resource }}
+*/ -}}
+{{- return (.Filter images.AutoOrient) -}}

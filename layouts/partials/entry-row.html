@@ -1,0 +1,13 @@
+{{- $t := .Type -}}
+{{- $label := .Title -}}
+{{- if eq $t "notes" -}}
+  {{/* A note's substance is its content, not its (often filename-derived) title. */}}
+  {{- $label = .Summary | plainify | truncate 70 -}}
+{{- else if eq $t "links" -}}
+  {{- if not .Params.title }}{{ $label = .Summary | plainify | truncate 70 }}{{ end -}}
+{{- end -}}
+<li class="stream__item">
+  {{ partial "type-marker.html" $t }}
+  <span class="stream__title"><a href="{{ .RelPermalink }}">{{ $label }}</a></span>
+  <time class="stream__date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+</li>

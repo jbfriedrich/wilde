@@ -1,0 +1,7 @@
+<li class="entry entry--note">
+  <div class="entry__body prose prose--compact">{{ .Content }}</div>
+  <div class="entry__meta">
+    <a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "Jan 2, 2006" }}</time></a>
+    {{ partial "tags.html" . }}
+  </div>
+</li>

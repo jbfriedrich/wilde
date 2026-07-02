@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode | default "en" }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site">
+    {{ partial "header.html" . }}
+    <main id="main" class="site-main">
+      <div class="wrap {{ block "wrapclass" . }}{{ end }}">
+        {{ block "main" . }}{{ end }}
+      </div>
+    </main>
+    {{ partial "footer.html" . }}
+  </div>
+  {{ $toggle := resources.Get "js/theme-toggle.js" }}
+  {{ if hugo.IsProduction }}{{ $toggle = $toggle | minify | fingerprint }}{{ end }}
+  <script src="{{ $toggle.RelPermalink }}" defer></script>
+  {{ block "scripts" . }}{{ end }}
+</body>
+</html>

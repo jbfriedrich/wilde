@@ -1,0 +1,8 @@
+{{- $src := .Get "src" -}}
+{{- $caption := .Get "caption" -}}
+{{- $title := .Get "title" -}}
+{{- $alt := .Get "alt" | default $caption | default $title -}}
+<figure>
+  <img src="{{ $src | safeURL }}" alt="{{ $alt }}"{{ with $title }} title="{{ . }}"{{ end }} loading="lazy">
+  {{- with $caption }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>

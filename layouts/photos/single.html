@@ -1,0 +1,50 @@
+{{ define "wrapclass" }}wrap--wide{{ end }}
+{{ define "main" }}
+<article class="post photos">
+  <header class="post-header">
+    <h2>{{ .Title }}</h2>
+    <div class="post-header__meta">
+      <span class="post-header__meta-main">
+        <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        {{- with .Params.images }}<span>{{ len . }} photos</span>{{ end }}
+      </span>
+      {{ partial "tags.html" . }}
+    </div>
+  </header>
+
+  {{- with .Content }}<div class="post-body prose prose--photo">{{ . }}</div>{{ end }}
+
+  <div class="gallery">
+    {{- range $name := .Params.images }}
+      {{- with $.Resources.GetMatch $name }}
+      {{- /* A caption exists only when the resource has an explicit `title` in the
+             page's `resources` metadata. Hugo otherwise defaults .Title to the
+             filename (.Name), so compare the two to avoid captioning filenames. */ -}}
+      {{- $caption := "" }}{{ if ne .Title .Name }}{{ $caption = .Title }}{{ end }}
+      {{- $oriented := partial "oriented.html" . }}
+      {{- $thumb := $oriented.Fill "600x600 webp q78" }}
+      {{- $full := $oriented.Resize "2000x webp q82" }}
+      <a class="gallery__item" href="{{ $full.RelPermalink }}" data-caption="{{ $caption }}">
+        <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ $caption | default $.Title }}" loading="lazy">
+      </a>
+      {{- end }}
+    {{- end }}
+  </div>
+</article>
+
+<div class="lightbox" aria-hidden="true">
+  <button class="lightbox__btn lightbox__prev" type="button" aria-label="Previous photo"></button>
+  <button class="lightbox__btn lightbox__next" type="button" aria-label="Next photo"></button>
+  <button class="lightbox__btn lightbox__close" type="button" aria-label="Close"></button>
+  <figure class="lightbox__figure">
+    <img class="lightbox__img" src="" alt="">
+    <figcaption class="lightbox__caption" hidden></figcaption>
+  </figure>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+{{ $gallery := resources.Get "js/gallery.js" }}
+{{ if hugo.IsProduction }}{{ $gallery = $gallery | minify | fingerprint }}{{ end }}
+<script src="{{ $gallery.RelPermalink }}" defer></script>
+{{ end }}

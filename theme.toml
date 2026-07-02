@@ -1,0 +1,8 @@
+name = "Wilde"
+license = "MIT"
+description = "A clean, multi-format Hugo theme (posts, notes, links, photos) built on tinycss. Two presets — stream and hybrid — share one design, re-themed with a single hue."
+min_version = "0.140.0"
+
+[author]
+  name = "Jason Friedrich"
+  homepage = "https://friedrich.uk"

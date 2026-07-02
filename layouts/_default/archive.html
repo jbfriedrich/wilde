@@ -1,0 +1,38 @@
+{{ define "main" }}
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{- with .Content }}<div class="page-header__lede">{{ . }}</div>{{ end }}
+  </header>
+
+  <div class="search">
+    <input class="search__input" type="search" placeholder="Search posts, notes, links, photos…"
+           aria-label="Search" autocomplete="off" data-index="{{ "/index.json" | relURL }}">
+    <p class="search__status" role="status" aria-live="polite"></p>
+  </div>
+  <ul class="search__results" aria-live="polite"></ul>
+
+  <div class="archive">
+    {{- range (sort (where site.RegularPages "Section" "!=" "") "Date" "desc").GroupByDate "2006" }}
+    <h2 class="archive__year">{{ .Key }}</h2>
+    <ul class="archive__list">
+      {{- range .Pages }}
+      {{- $title := .Title }}
+      {{- if and (in (slice "notes" "links") .Type) (not .Params.title) }}{{ $title = .Summary | plainify | truncate 70 }}{{ end }}
+      <li class="archive__item">
+        {{ partial "type-marker.html" .Type }}
+        <a class="archive__link" href="{{ .RelPermalink }}">{{ $title }}</a>
+        <span class="archive__date">{{ .Date.Format "Jan 02" }}</span>
+      </li>
+      {{- end }}
+    </ul>
+    {{- end }}
+  </div>
+{{ end }}
+
+{{ define "scripts" }}
+  {{- $fuse := resources.Get "js/vendor/fuse.min.js" -}}
+  {{- $search := resources.Get "js/search.js" -}}
+  {{- if hugo.IsProduction }}{{ $search = $search | minify | fingerprint }}{{ end -}}
+  <script src="{{ $fuse.RelPermalink }}" defer></script>
+  <script src="{{ $search.RelPermalink }}" defer></script>
+{{ end }}

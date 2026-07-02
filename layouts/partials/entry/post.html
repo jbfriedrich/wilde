@@ -1,0 +1,21 @@
+<li class="entry entry--post">
+  {{- $fi := .Params.feature_image -}}
+  {{- if $fi }}
+  <a class="entry__figure" href="{{ .RelPermalink }}" tabindex="-1" aria-hidden="true">
+    {{- if hasPrefix $fi "http" }}
+    <img src="{{ $fi }}" alt="" loading="lazy">
+    {{- else }}{{ with .Resources.GetMatch $fi }}{{ $img := (partial "oriented.html" .).Fill "1200x675 webp q80" }}
+    <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="" loading="lazy">
+    {{- end }}{{ end }}
+  </a>
+  {{- end }}
+  <h3 class="entry__title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  {{- with .Summary }}<p class="entry__excerpt">{{ . | plainify | truncate 240 }}</p>{{ end }}
+  <div class="entry__meta">
+    <span class="entry__meta-main">
+      <a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time></a>
+      {{- if .ReadingTime }}<span>{{ .ReadingTime }} min read</span>{{ end }}
+    </span>
+    {{ partial "tags.html" . }}
+  </div>
+</li>

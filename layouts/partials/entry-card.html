@@ -1,0 +1,10 @@
+{{- $t := .Type -}}
+{{- if eq $t "links" -}}
+  {{ partial "entry/link.html" . }}
+{{- else if eq $t "notes" -}}
+  {{ partial "entry/note.html" . }}
+{{- else if eq $t "photos" -}}
+  {{ partial "entry/photo.html" . }}
+{{- else -}}
+  {{ partial "entry/post.html" . }}
+{{- end -}}

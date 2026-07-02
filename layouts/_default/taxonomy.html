@@ -1,0 +1,20 @@
+{{ define "main" }}
+{{- if eq .Kind "taxonomy" -}}
+  {{- /* The taxonomy list page (e.g. /tags/): a cloud of every term. */ -}}
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+  </header>
+  <ul class="taglist taglist--cloud">
+    {{- range .Data.Terms.ByCount }}
+    <li><a class="badge badge-outline-secondary tag" href="{{ .Page.RelPermalink }}">{{ .Page.Title }} <span aria-hidden="true">&middot; {{ .Count }}</span></a></li>
+    {{- end }}
+  </ul>
+{{- else -}}
+  {{- /* A single term page (e.g. /tags/warcraft/): the feed of tagged entries. */ -}}
+  {{- $paged := .Paginate (sort .Pages "Date" "desc") -}}
+  <ul class="feed">
+    {{- range $paged.Pages }}{{ partial "entry-card.html" . }}{{ end -}}
+  </ul>
+  {{ partial "pagination.html" . }}
+{{- end -}}
+{{ end }}

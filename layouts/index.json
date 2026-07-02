@@ -1,0 +1,16 @@
+{{- $list := slice -}}
+{{- range (sort (where site.RegularPages "Section" "!=" "") "Date" "desc") -}}
+  {{- $title := .Title -}}
+  {{- if and (in (slice "notes" "links") .Type) (not .Params.title) -}}
+    {{- $title = .Summary | plainify | truncate 70 -}}
+  {{- end -}}
+  {{- $list = $list | append (dict
+      "title" $title
+      "url" .RelPermalink
+      "section" .Type
+      "date" (.Date.Format "Jan 2, 2006")
+      "tags" (.Params.tags)
+      "summary" (.Summary | plainify | truncate 200)
+  ) -}}
+{{- end -}}
+{{- $list | jsonify -}}

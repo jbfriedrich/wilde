@@ -1,0 +1,32 @@
+{{ define "wrapclass" }}wrap--wide{{ end }}
+{{ define "main" }}
+<article class="post">
+  <header class="post-header">
+    <h2>{{ .Title }}</h2>
+    <div class="post-header__meta">
+      <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      {{- if .ReadingTime }}<span>{{ .ReadingTime }} min read</span>{{ end }}
+    </div>
+  </header>
+
+  {{/* Show an authored summary (frontmatter `summary`) as a standfirst. Use
+       .Params.summary, not .Summary — the latter is auto-generated from content. */}}
+  {{- with .Params.summary }}<div class="post-summary"><p>{{ . }}</p></div>{{ end }}
+
+  {{- $fi := .Params.feature_image }}
+  {{- if $fi }}
+  <div class="post__feature">
+    {{- if hasPrefix $fi "http" }}<img src="{{ $fi }}" alt="" loading="eager">
+    {{- else }}{{ with .Resources.GetMatch $fi }}<img src="{{ ((partial "oriented.html" .).Fill "1600x900 webp q82").RelPermalink }}" alt="" loading="eager">{{ end }}{{ end }}
+  </div>
+  {{- end }}
+
+  <div class="post-body prose">
+    {{ .Content }}
+  </div>
+
+  <footer class="post-footer">
+    {{ partial "tags.html" . }}
+  </footer>
+</article>
+{{ end }}

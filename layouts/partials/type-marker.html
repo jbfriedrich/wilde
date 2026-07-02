@@ -1,0 +1,9 @@
+{{- /* Post-type marker icon. Pass the (plural) section/type string, e.g. .Type.
+       Renders an accessible icon span used by the stream, archive and search. */ -}}
+{{- $t := . -}}
+{{- $slug := "post" -}}{{- $aria := "Post" -}}
+{{- if eq $t "notes" -}}{{- $slug = "note" }}{{ $aria = "Note" -}}
+{{- else if eq $t "links" -}}{{- $slug = "link" }}{{ $aria = "Link" -}}
+{{- else if eq $t "photos" -}}{{- $slug = "photos" }}{{ $aria = "Photos" -}}
+{{- end -}}
+<span class="type-icon type-icon--{{ $slug }}" role="img" aria-label="{{ $aria }}"></span>

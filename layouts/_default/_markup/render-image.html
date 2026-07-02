@@ -1,0 +1,11 @@
+{{- $dest := .Destination -}}
+{{- $res := "" -}}
+{{- with .Page.Resources.GetMatch $dest }}{{ $res = . }}{{ end -}}
+<figure>
+  {{- if $res }}
+  <img src="{{ $res.RelPermalink }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
+  {{- else }}
+  <img src="{{ $dest | safeURL }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
+  {{- end }}
+  {{- with .Title }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>

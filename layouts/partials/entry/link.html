@@ -1,0 +1,18 @@
+{{- $domain := "" -}}
+{{- with .Params.domains }}{{ $domain = index . 0 }}{{ end -}}
+{{- if and (not $domain) .Params.link }}{{ $domain = (urls.Parse .Params.link).Hostname | strings.TrimPrefix "www." }}{{ end -}}
+{{- $domainURL := "" -}}
+{{- with $domain }}{{ $domainURL = printf "/links/%s/" . | relURL }}{{ end -}}
+<li class="entry entry--link">
+  {{- with $domain }}<p class="link-kicker"><a href="{{ $domainURL }}">{{ . }}</a></p>{{ end }}
+  {{- if .Params.title }}
+  <h3 class="entry__title"><a href="{{ .Params.link }}" rel="noopener noreferrer">{{ .Title }}</a></h3>
+  {{- with .Content }}<div class="entry__commentary prose prose--compact">{{ . }}</div>{{ end }}
+  {{- else }}
+  <h3 class="entry__title"><a href="{{ .Params.link }}" rel="noopener noreferrer">{{ .Summary | plainify | truncate 160 }}</a></h3>
+  {{- end }}
+  <div class="entry__meta">
+    <a href="{{ .RelPermalink }}"><time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "Jan 2, 2006" }}</time></a>
+    {{ partial "tags.html" . }}
+  </div>
+</li>

@@ -1,0 +1,16 @@
+{{ define "main" }}
+{{- $domain := "" -}}
+{{- with .Params.domains }}{{ $domain = index . 0 }}{{ end -}}
+{{- if and (not $domain) .Params.link }}{{ $domain = (urls.Parse .Params.link).Hostname | strings.TrimPrefix "www." }}{{ end -}}
+<article class="post link">
+  <header class="post-header">
+    <h2><a href="{{ .Params.link }}" rel="noopener noreferrer">{{ .Title | default .Params.link }}</a></h2>
+    <div class="post-header__meta">
+      <time datetime="{{ .Date.Format "2006-01-02T15:04:05" }}">{{ .Date.Format "January 2, 2006 · 15:04" }}</time>
+      {{- with $domain }}<a href="{{ printf "/links/%s/" . | relURL }}">More from {{ . }} &rarr;</a>{{ end }}
+    </div>
+  </header>
+  <div class="post-body prose prose--compact">{{ .Content }}</div>
+  <footer class="post-footer">{{ partial "tags.html" . }}</footer>
+</article>
+{{ end }}

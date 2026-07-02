@@ -1,0 +1,28 @@
+{{ define "main" }}
+  {{/* Home title: shown only when the home _index.md sets one (.Title falls
+       back to the site title, so guard on the raw .Params.title instead). */}}
+  {{- with .Params.title }}<h4 class="home-title">{{ . }}</h4>{{ end }}
+  {{- $preset := .Site.Params.preset | default "hybrid" -}}
+
+  {{- if eq $preset "stream" -}}
+    {{/* jason.re: latest N entries of every type, compact dated rows. */}}
+    {{- $n := .Site.Params.homeCount | default 12 -}}
+    {{- $pages := first $n (sort (where site.RegularPages "Section" "!=" "") "Date" "desc") -}}
+    {{- with .Content }}<div class="page-intro prose">{{ . }}</div>{{ end }}
+    <ul class="stream">
+      {{- range $pages }}{{ partial "entry-row.html" . }}{{ end -}}
+    </ul>
+    <p class="more-link"><a href="{{ "/archive/" | relURL }}">Browse the full archive &rarr;</a></p>
+
+  {{- else -}}
+    {{/* outofscope: posts + links + notes interleaved as cards; photos excluded. */}}
+    {{- $sections := .Site.Params.feedSections | default (slice "posts" "links" "notes") -}}
+    {{- $pages := where site.RegularPages "Section" "in" $sections -}}
+    {{- $paged := .Paginate (sort $pages "Date" "desc") -}}
+    {{- with .Content }}<div class="page-intro prose">{{ . }}</div>{{ end }}
+    <ul class="feed">
+      {{- range $paged.Pages }}{{ partial "entry-card.html" . }}{{ end -}}
+    </ul>
+    {{ partial "pagination.html" . }}
+  {{- end -}}
+{{ end }}
