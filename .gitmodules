@@ -1,3 +1,3 @@
 [submodule "assets/tinycss"]
 	path = assets/tinycss
-	url = git@github.com:jbfriedrich/tinycss.git
+	url = https://github.com/jbfriedrich/tinycss.git
