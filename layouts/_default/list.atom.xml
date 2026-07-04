@@ -1,7 +1,9 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\"?>" | safeHTML }}
 {{/* Home = one feed for EVERYTHING (all sections incl. photos). A section feed
      (/posts/index.xml etc.) carries just that section's pages. Full content, no
-     summaries — see <content> below. */}}
+     summaries — see <content> below. Link/photo entries fold their vital bits
+     (outbound link / gallery images) into the content, since those live in front
+     matter / page resources, not in .Content. */}}
 {{- $pages := .RegularPagesRecursive -}}
 {{- if .IsHome }}{{ $pages = where site.RegularPages "Section" "!=" "" }}{{ end -}}
 {{- $pages = first 40 (sort $pages "Date" "desc") -}}
@@ -13,6 +15,7 @@
   <id>{{ .Permalink }}</id>
   {{- with $pages }}<updated>{{ (index . 0).Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}</updated>{{ end }}
   {{- range $pages }}
+  {{- $e := . -}}
   <entry>
     <title>{{ .Title | default .Summary | plainify }}</title>
     <link href="{{ .Permalink }}" rel="alternate" type="text/html"/>
@@ -21,7 +24,31 @@
     <updated>{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}</updated>
     {{- with .GetTerms "tags" }}{{ range . }}<category term="{{ .LinkTitle }}"/>{{ end }}{{ end }}
     {{- if eq .Type "links" }}<link href="{{ .Params.link }}" rel="related"/>{{ end }}
-    <content type="html">{{ .Content | html }}</content>
+    {{- $c := .Content -}}
+    {{- if eq .Type "photos" -}}
+      {{/* Prepend the gallery images (absolute URLs, jpg for reader compatibility). */}}
+      {{- $imgs := slice -}}
+      {{- range .Params.images -}}
+        {{- with $e.Resources.GetMatch . -}}
+          {{- $img := (partial "oriented.html" .).Fit "1200x1200 jpg q82" -}}
+          {{- $imgs = $imgs | append (printf "<p><img src=\"%s\" alt=\"\"></p>" $img.Permalink) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $c = printf "%s%s" (delimit $imgs "") $c -}}
+    {{- else if eq .Type "links" -}}
+      {{/* Append the outbound link to the original source. */}}
+      {{- $label := .Params.link -}}
+      {{- with .Params.domains }}{{ $label = index . 0 }}{{ end -}}
+      {{- $c = printf "%s<p><a href=\"%s\">%s →</a></p>" $c .Params.link $label -}}
+    {{- else if and (eq .Type "posts") .Params.feature_image -}}
+      {{/* Prepend the feature image (external URL as-is; page resource -> jpg). */}}
+      {{- $src := .Params.feature_image -}}
+      {{- if not (hasPrefix $src "http") -}}
+        {{- with $e.Resources.GetMatch .Params.feature_image }}{{ $src = ((partial "oriented.html" .).Fit "1600x1600 jpg q82").Permalink }}{{ end -}}
+      {{- end -}}
+      {{- $c = printf "<p><img src=\"%s\" alt=\"\"></p>%s" $src $c -}}
+    {{- end -}}
+    <content type="html">{{ $c | html }}</content>
   </entry>
   {{- end }}
 </feed>
