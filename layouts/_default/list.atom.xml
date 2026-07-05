@@ -26,7 +26,8 @@
     {{- if eq .Type "links" }}<link href="{{ .Params.link }}" rel="related"/>{{ end }}
     {{- $c := .Content -}}
     {{- if eq .Type "photos" -}}
-      {{/* Prepend the gallery images (absolute URLs, jpg for reader compatibility). */}}
+      {{/* Lead with the post's description, then append the gallery images
+           (absolute URLs, jpg for reader compatibility). */}}
       {{- $imgs := slice -}}
       {{- range .Params.images -}}
         {{- with $e.Resources.GetMatch . -}}
@@ -34,7 +35,7 @@
           {{- $imgs = $imgs | append (printf "<p><img src=\"%s\" alt=\"\"></p>" $img.Permalink) -}}
         {{- end -}}
       {{- end -}}
-      {{- $c = printf "%s%s" (delimit $imgs "") $c -}}
+      {{- $c = printf "%s%s" $c (delimit $imgs "") -}}
     {{- else if eq .Type "links" -}}
       {{/* Append the outbound link to the original source. */}}
       {{- $label := .Params.link -}}
