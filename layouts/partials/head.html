@@ -34,4 +34,14 @@
 {{- end }}
 
 <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any">
-{{- with .Site.Params.author.fediverse_handle }}<meta name="fediverse:creator" content="{{ . }}">{{ end }}
+
+{{/* Fediverse: author attribution (fediverse:creator, handle verbatim) + profile
+     link verification (rel="me", handle -> https://domain/@user). Both from the
+     single author handle. */}}
+{{- with .Site.Params.author.fediverse_handle -}}
+  {{- $p := split (strings.TrimPrefix "@" .) "@" -}}
+  <meta name="fediverse:creator" content="{{ . }}">
+  {{- if eq (len $p) 2 }}
+  <link href="{{ printf "https://%s/@%s" (index $p 1) (index $p 0) }}" rel="me">
+  {{- end }}
+{{- end }}
