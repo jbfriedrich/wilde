@@ -10,7 +10,9 @@
     {{- end }}
   </ul>
 {{- else -}}
-  {{- /* A single term page (e.g. /tags/warcraft/): the feed of tagged entries. */ -}}
+  {{- /* A single term page (e.g. /tags/warcraft/ or /links/example.com/): the feed of
+         entries. No heading — for domain pages each card's kicker already names the host,
+         so a title here would just be redundant. */ -}}
   {{- $paged := .Paginate (sort .Pages "Date" "desc") -}}
   <ul class="feed">
     {{- range $paged.Pages }}{{ partial "entry-card.html" . }}{{ end -}}

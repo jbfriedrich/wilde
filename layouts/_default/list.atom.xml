@@ -18,12 +18,15 @@
   {{- $e := . -}}
   <entry>
     <title>{{ .Title | default .Summary | plainify }}</title>
-    <link href="{{ .Permalink }}" rel="alternate" type="text/html"/>
+    {{- /* Linkblog: a link entry's alternate points at the shared SOURCE; the post
+           permalink stays the <id> and is offered as rel="related" + an in-content link. */}}
+    {{- $alt := .Permalink }}{{ if eq .Type "links" }}{{ $alt = .Params.link }}{{ end }}
+    <link href="{{ $alt }}" rel="alternate" type="text/html"/>
     <id>{{ .Permalink }}</id>
     <published>{{ .Date.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}</published>
     <updated>{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" | safeHTML }}</updated>
     {{- with .GetTerms "tags" }}{{ range . }}<category term="{{ .LinkTitle }}"/>{{ end }}{{ end }}
-    {{- if eq .Type "links" }}<link href="{{ .Params.link }}" rel="related"/>{{ end }}
+    {{- if eq .Type "links" }}<link href="{{ .Permalink }}" rel="related"/>{{ end }}
     {{- $c := .Content -}}
     {{- if eq .Type "photos" -}}
       {{/* Lead with the post's description, then append the gallery images
@@ -37,10 +40,9 @@
       {{- end -}}
       {{- $c = printf "%s%s" $c (delimit $imgs "") -}}
     {{- else if eq .Type "links" -}}
-      {{/* Append the outbound link to the original source. */}}
-      {{- $label := .Params.link -}}
-      {{- with .Params.domains }}{{ $label = index . 0 }}{{ end -}}
-      {{- $c = printf "%s<p><a href=\"%s\">%s →</a></p>" $c .Params.link $label -}}
+      {{/* Comment leads; append a permalink back to the post (the source is the
+           entry's alternate link above). */}}
+      {{- $c = printf "%s<p><a href=\"%s\">Permalink →</a></p>" $c .Permalink -}}
     {{- else if and (eq .Type "posts") .Params.feature_image -}}
       {{/* Prepend the feature image (external URL as-is; page resource -> jpg). */}}
       {{- $src := .Params.feature_image -}}
