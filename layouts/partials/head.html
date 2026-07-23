@@ -15,18 +15,19 @@
 (function(){try{var t=localStorage.getItem('theme');if(!t){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}})();
 </script>
 
-{{/* Per-blog colour scheme: one hue var re-themes the whole site. */}}
-{{- $hue := .Site.Params.hue -}}
-{{- $altHue := .Site.Params.altHue -}}
-{{- if or $hue $altHue }}
-<style>:root{ {{ with $hue }}--hue:{{ . }};{{ end }}{{ with $altHue }}--alt-hue:{{ . }};{{ end }} }</style>
-{{- end }}
-
 {{/* CSS: the whole stylesheet is tinycss (framework + blog components), vendored
      as a nested submodule at assets/tinycss/. Concat sets the bundled name. */}}
 {{- $css := slice (resources.Get "tinycss/style.css") | resources.Concat "css/wilde.css" -}}
 {{- if hugo.IsProduction }}{{ $css = $css | minify | fingerprint }}{{ end -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}"{{ if hugo.IsProduction }} integrity="{{ $css.Data.Integrity }}"{{ end }}>
+
+{{/* Per-blog colour scheme: one hue var re-themes the whole site. Emitted AFTER the
+     stylesheet so this :root override wins the cascade over tinycss's default --hue. */}}
+{{- $hue := .Site.Params.hue -}}
+{{- $altHue := .Site.Params.altHue -}}
+{{- if or $hue $altHue }}
+<style>:root{ {{ with $hue }}--hue:{{ . }};{{ end }}{{ with $altHue }}--alt-hue:{{ . }};{{ end }} }</style>
+{{- end }}
 
 {{/* Atom feed autodiscovery. */}}
 {{- range .AlternativeOutputFormats -}}
