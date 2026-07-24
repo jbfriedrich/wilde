@@ -6,13 +6,17 @@
   </header>
   <ul class="photo-grid">
     {{- range $page := (sort .RegularPagesRecursive "Date" "desc") }}
-      {{- $cover := "" }}{{ with $page.Params.images }}{{ $cover = index . 0 }}{{ end }}
+      {{- $imgs := $page.Params.images }}
+      {{- $cover := "" }}{{ with $imgs }}{{ $cover = index . 0 }}{{ end }}
       {{- $res := "" }}{{ with $cover }}{{ $res = $page.Resources.GetMatch . }}{{ end }}
       {{- with $res }}{{ $res = partial "oriented.html" . }}{{ end }}
       <li class="photo-grid__item">
         <a href="{{ $page.RelPermalink }}">
-          {{- with $res }}<img src="{{ (.Fill "560x560 webp q80").RelPermalink }}" alt="{{ $page.Title }}" loading="lazy">{{ end }}
-          <span class="photo-grid__caption">{{ $page.Title }}</span>
+          {{- with $res }}{{ $c := .Fill "760x570 webp q80" }}<img src="{{ $c.RelPermalink }}" width="{{ $c.Width }}" height="{{ $c.Height }}" alt="{{ $page.Title }}" loading="lazy">{{ end }}
+          <span class="photo-grid__caption">
+            <span class="photo-grid__title">{{ $page.Title }}</span>
+            <span class="photo-grid__meta">{{ $page.Date.Format "January 2006" }} · <b>{{ len $imgs }} photos</b></span>
+          </span>
         </a>
       </li>
     {{- end }}

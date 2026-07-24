@@ -22,9 +22,9 @@
              filename (.Name), so compare the two to avoid captioning filenames. */ -}}
       {{- $caption := "" }}{{ if ne .Title .Name }}{{ $caption = .Title }}{{ end }}
       {{- $oriented := partial "oriented.html" . }}
-      {{- $thumb := $oriented.Fill "600x600 webp q78" }}
+      {{- $thumb := $oriented.Fit "1000x1000 webp q78" }}
       {{- $full := $oriented.Resize "2000x webp q82" }}
-      <a class="gallery__item" href="{{ $full.RelPermalink }}" data-caption="{{ $caption }}">
+      <a class="gallery__item" href="{{ $full.RelPermalink }}" data-caption="{{ $caption }}" style="--ar: {{ div (float $thumb.Width) $thumb.Height }}">
         <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ $caption | default $.Title }}" loading="lazy">
       </a>
       {{- end }}
